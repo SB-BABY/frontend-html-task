@@ -2,6 +2,8 @@
 
 [![Live Demo](https://github.com/Alaladdin/frontend-html-task/blob/main/src/assets/design.png?raw=true)](https://sb-baby.github.io/frontend-html-task/)
 
+<p>Нажмите на картинку или на <a href="https://sb-baby.github.io/frontend-html-task/">прямую ссылку</a></p>
+
 ## Реализация
 
 <ul>
