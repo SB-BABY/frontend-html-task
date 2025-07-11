@@ -167,10 +167,13 @@ const ThemeToggle = styled.button`
   color: ${(props) => props.theme.textDefault};
   border-radius: 20px;
   border: none;
-  
   &:hover {
     background: ${(props) => props.theme.sidebarBackgroundHover};
     color: ${(props) => props.theme.textHover};
+  }
+
+  > svg {
+    font-size: 1.5rem;
   }
 `;
 
