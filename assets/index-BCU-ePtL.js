@@ -721,10 +721,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
   color: ${c=>c.theme.textDefault};
   border-radius: 20px;
   border: none;
-  
   &:hover {
     background: ${c=>c.theme.sidebarBackgroundHover};
     color: ${c=>c.theme.textHover};
+  }
+
+  > svg {
+    font-size: 1.5rem;
   }
 `,Sq=S2.span`
   opacity: ${c=>c.$isOpened?1:0};
