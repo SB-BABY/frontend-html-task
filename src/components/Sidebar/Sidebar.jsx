@@ -20,11 +20,29 @@ const bottomRoutes = [
   { title: "Support", icon: "phone-volume", path: "/support" },
 ];
 
-// Стилизованные компоненты
+const Tooltip = styled.div`
+  position: absolute;
+  left: 50px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: ${(props) => props.theme.sidebarBackgroundActive};
+  color: ${(props) => props.theme.textActive};
+  padding: 12px 20px;
+  border-radius: 20px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 1000;
+  pointer-events: none;
+
+`;
+
 const SidebarContainer = styled.div`
   background: ${(props) => props.theme.sidebarBackground};
   color: ${(props) => props.theme.textDefault};
-  width: ${(props) => (props.isOpened ? "250px" : "80px")};
+  width: ${(props) => (props.$isOpened ? "250px" : "80px")};
   border-radius: 20px;
   height: 100vh;
   position: fixed;
@@ -42,6 +60,7 @@ const SidebarHeader = styled.div`
   padding: 20px;
   gap: 10px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  position: relative;
 `;
 
 const Logo = styled.img`
@@ -51,13 +70,10 @@ const Logo = styled.img`
 `;
 
 const LogoText = styled.span`
-  color: ${(props) => {
-    console.log("Current theme in LogoText:", props.theme);
-    return props.theme.textLogo;
-  }};
+  color: ${(props) => props.theme.textLogo};
   font-weight: bold;
   white-space: nowrap;
-  opacity: ${(props) => (props.isOpened ? 1 : 0)};
+  opacity: ${(props) => (props.$isOpened ? 1 : 0)};
   transition: opacity 0.3s ease;
 `;
 
@@ -69,13 +85,13 @@ const ToggleButton = styled.button`
   background: ${(props) =>
     props.$isOpened
       ? props.theme.buttonBackground
-      : props.theme.buttonBackgroundActive };
+      : props.theme.buttonBackgroundActive};
   border: none;
   color: ${(props) => props.theme.textDefault};
   cursor: pointer;
   padding: 7px 10px;
   border-radius: 50%;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
   
   &:hover {
     background: ${(props) => props.theme.buttonBackgroundActive};
@@ -90,11 +106,22 @@ const NavSection = styled.div`
   row-gap: 5px;
 `;
 
-const NavItem = styled.div`
+const NavItemWrapper = styled.div`
+  position: relative;
+  margin: 0 10px;
+  
+  &:hover {
+    ${Tooltip} {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+`;
+
+const NavItemInner = styled.div`
   display: flex;
   align-items: center;
   padding: 12px 20px;
-  margin: 0 10px;
   gap: 20px;
   cursor: pointer;
   white-space: nowrap;
@@ -109,22 +136,12 @@ const NavItem = styled.div`
     background: ${(props) => props.theme.sidebarBackgroundHover};
     color: ${(props) => props.theme.textHover};
   }
-  
-  &.active {
-    background: ${(props) => props.theme.sidebarBackgroundActive};
-    color: ${(props) => props.theme.textActive};
-  }
 
-   & > svg {
+  & > svg {
     margin-right: ${(props) => (props.$isOpened ? "10px" : "0")};
     min-width: 20px;
     text-align: center;
     font-size: 1.1rem;
-  }
-  
-  & > span {
-    transition: opacity 0.3s ease;
-    opacity: ${(props) => (props.$isOpened ? 1 : 0)};
   }
 `;
 
@@ -134,7 +151,7 @@ const NavIcon = styled(FontAwesomeIcon)`
 `;
 
 const NavText = styled.span`
-  opacity: ${(props) => (props.isOpened ? 1 : 0)};
+  opacity: ${(props) => (props.$isOpened ? 1 : 0)};
   transition: opacity 0.3s ease;
 `;
 
@@ -147,28 +164,14 @@ const ThemeToggle = styled.button`
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.3s ease;
-  background: ${(props) =>
-    props.$isActive ? props.theme.sidebarBackgroundActive : "transparent"};
-  color: ${(props) =>
-    props.$isActive ? props.theme.textActive : props.theme.textDefault};
+  background: transparent;
+  color: ${(props) => props.theme.textDefault};
   border-radius: 20px;
   border: none;
   
   &:hover {
     background: ${(props) => props.theme.sidebarBackgroundHover};
     color: ${(props) => props.theme.textHover};
-  }
-  
-  &.active {
-    background: ${(props) => props.theme.sidebarBackgroundActive};
-    color: ${(props) => props.theme.textActive};
-  }
-
-  & > svg {
-    margin-right: ${(props) => (props.$isOpened ? "10px" : "0")};
-    min-width: 20px;
-    text-align: center;
-    font-size: 1.4rem;
   }
 `;
 
@@ -181,7 +184,7 @@ const ThemeText = styled.span`
 const Sidebar = (props) => {
   const { color } = props;
   const [isOpened, setIsOpened] = useState(false);
-  const [activePath, setActivePath] = useState("/"); // По умолчанию активен Home
+  const [activePath, setActivePath] = useState("/");
   const [currentTheme, setCurrentTheme] = useState(
     color === "dark" ? darkTheme : lightTheme
   );
@@ -201,40 +204,44 @@ const Sidebar = (props) => {
 
   return (
     <ThemeProvider theme={currentTheme}>
-      <SidebarContainer isOpened={isOpened}>
+      <SidebarContainer $isOpened={isOpened}>
         <SidebarHeader>
           <Logo src={logo} alt="TensorFlow logo" />
-          <LogoText isOpened={isOpened}>TensorFlow</LogoText>
-          <ToggleButton onClick={toggleSidebar}>
+          <LogoText $isOpened={isOpened}>TensorFlow</LogoText>
+          <ToggleButton onClick={toggleSidebar} $isOpened={isOpened}>
             <FontAwesomeIcon icon={isOpened ? "angle-left" : "angle-right"} />
           </ToggleButton>
         </SidebarHeader>
 
         <NavSection>
           {routes.map((route) => (
-            <NavItem
-              key={route.title}
-              onClick={() => goToRoute(route.path)}
-              $isActive={activePath === route.path}
-              $isOpened={isOpened}
-            >
-              <NavIcon icon={route.icon} />
-              <NavText $isOpened={isOpened}>{route.title}</NavText>
-            </NavItem>
+            <NavItemWrapper key={route.title}>
+              <NavItemInner
+                onClick={() => goToRoute(route.path)}
+                $isActive={activePath === route.path}
+                $isOpened={isOpened}
+              >
+                <NavIcon icon={route.icon} />
+                <NavText $isOpened={isOpened}>{route.title}</NavText>
+              </NavItemInner>
+              {!isOpened && <Tooltip>{route.title}</Tooltip>}
+            </NavItemWrapper>
           ))}
         </NavSection>
 
         <NavSection>
           {bottomRoutes.map((route) => (
-            <NavItem
-              key={route.title}
-              onClick={() => goToRoute(route.path)}
-              $isActive={activePath === route.path}
-              $isOpened={isOpened}
-            >
-              <NavIcon icon={route.icon} />
-              <NavText $isOpened={isOpened}>{route.title}</NavText>
-            </NavItem>
+            <NavItemWrapper key={route.title}>
+              <NavItemInner
+                onClick={() => goToRoute(route.path)}
+                $isActive={activePath === route.path}
+                $isOpened={isOpened}
+              >
+                <NavIcon icon={route.icon} />
+                <NavText $isOpened={isOpened}>{route.title}</NavText>
+              </NavItemInner>
+              {!isOpened && <Tooltip>{route.title}</Tooltip>}
+            </NavItemWrapper>
           ))}
 
           <ThemeToggle onClick={toggleTheme}>
@@ -255,6 +262,5 @@ const Sidebar = (props) => {
 Sidebar.propTypes = {
   color: PropTypes.oneOf(["light", "dark"]),
 };
-
 
 export default Sidebar;
