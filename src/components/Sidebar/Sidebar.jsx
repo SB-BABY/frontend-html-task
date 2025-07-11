@@ -36,7 +36,6 @@ const Tooltip = styled.div`
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   z-index: 1000;
   pointer-events: none;
-
 `;
 
 const SidebarContainer = styled.div`
